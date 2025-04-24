@@ -9,8 +9,11 @@ from google import genai
 from google.genai import types
 import logging
 from datetime import datetime
+import requests
+from PIL import Image
+from io import BytesIO
 
-log_filename = datetime.now().strftime("app_log_%Y-%m-%d_%H-%M-%S.log")
+log_filename = datetime.now().strftime("app_log_%Y-%m-%d.log")
 logging.basicConfig(
     level=logging.INFO,
     format='%(asctime)s %(levelname)s: %(message)s',
@@ -25,10 +28,32 @@ logging.info("Application started.")
 load_dotenv()
 google_api_key = os.getenv("GEMINI_API_KEY")
 
+logo_url = "https://drive.google.com/file/d/1HFz2fWiESfWwNctASYw5aUOggugUHSH-/view?usp=drive_link"
+logo_img_id = logo_url.split('/d/')[1].split('/')[0]
+logo_direct_url = f"https://drive.google.com/uc?export=download&id={logo_img_id}"
+logo_response = requests.get(logo_direct_url)
+logo_img = Image.open(BytesIO(logo_response.content))
+
 # Set Streamlit page config for a professional looking interface
 st.set_page_config(page_title="Design Flaw Prediction Scenarios", layout="wide")
-st.title("Design Flaw Prediction Scenarios")
-st.markdown("This application classifies design flaw related query and retrieves response backed up model-based predictions.")
+#st.image(logo_img, width=150)
+#st.title("Design Flaw Prediction Scenarios")
+# st.markdown(
+#     """
+#     <h3 style='text-align: center;'>Design Flaw Prediction Scenarios</h3>
+#     """,
+#     unsafe_allow_html=True
+# )
+# st.markdown("This application classifies design flaw related query and retrieves response backed up model-based predictions.")
+
+col1, col2, col3 = st.columns([1, 3, 1])
+
+with col2:
+    st.markdown("<h1 style='text-align: center;'>Design Flaw Prediction Scenarios</h1>", unsafe_allow_html=True)
+    st.markdown("<p style='text-align: center;'>This application classifies design flaw related query and retrieves response backed up model-based predictions.</p>", unsafe_allow_html=True)
+
+with col3:
+    st.image(logo_img, width=150)
 
 # Function to load a dataset from a given Google Drive URL
 @st.cache_data
@@ -49,23 +74,23 @@ st.sidebar.header("Data Loading")
 # Use st.spinner() (instead of st.sidebar.spinner()) to show progress while loading data
 with st.spinner("Loading datasets..."):
     # Carbon Emissions Data
-    carbon_emission_url = "https://drive.google.com/file/d/1sLmfagp0VMYOJJEA8A26ZKFVCH6xgemy/view?usp=drive_link"
+    carbon_emission_url = "https://drive.google.com/file/d/1CT7BoH4GViir01wk-jbAlk0IAC8JOtCF/view?usp=drive_link"
     df_carbon_emission, context_carbon_emission = load_dataset(carbon_emission_url)
     
     # Engine Condition Data
-    engine_condition_url = "https://drive.google.com/file/d/1MDFcnDEZMi0lnT2ZZiGxTtOoPurv7bTx/view?usp=drive_link"
+    engine_condition_url = "https://drive.google.com/file/d/1DF70jCVv6wAuMF8WxsHy_GoVOJSiBKmV/view?usp=drive_link"
     df_engine_condition, context_engine_condition = load_dataset(engine_condition_url)
     
     # Parts Failure Data
-    part_failure_url = "https://drive.google.com/file/d/1EzgwFutxxxQRAdKfDM7o0SWSiPdlZiFc/view?usp=drive_link"
+    part_failure_url = "https://drive.google.com/file/d/1bdQ6G3dQYTbVvoNdF2fCula0ApSiNDFJ/view?usp=drive_link"
     df_part_failure, context_part_failure = load_dataset(part_failure_url)
     
     # FMEA Analysis Data
-    fmea_analysis_url = "https://drive.google.com/file/d/1Mwl1KzCGn-ziiByBuUG3qSEt2LqClpIR/view?usp=drive_link"
+    fmea_analysis_url = "https://drive.google.com/file/d/1U9pkpYF2ejUuMKEK-YyE_icRSgRuRSqx/view?usp=drive_link"
     df_fmea_analysis, context_fmea_analysis = load_dataset(fmea_analysis_url)
     
     # Warranty Claim Data
-    warranty_claim_url = "https://drive.google.com/file/d/1KIg7MMYbnSiyAaDFb6jf684W02tSCzFL/view?usp=drive_link"
+    warranty_claim_url = "https://drive.google.com/file/d/12Q3rTROSFAIyiColNMLvGHIWEMk5uAz1/view?usp=drive_link"
     df_warranty_claim, context_warranty_claim = load_dataset(warranty_claim_url)
 st.sidebar.success("Datasets loaded successfully!")
 logging.info("All datasets loaded.")
